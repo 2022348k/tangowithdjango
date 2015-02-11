@@ -4,17 +4,17 @@
 
 <html>
 
-    <head>
-        <title>Rango</title>
-        <link rel="stylesheet" href="{% static "css/base.css" %}" /> <!-- CSS -->
-        <script src="{% static "js/jquery.js" %}"></script> <!-- JavaScript -->
+<head>
+    <title>Rango | About</title>
+    <link rel="stylesheet" href="{% static "css/base.css" %}" /> <!-- CSS -->
+    <script src="{% static "js/jquery.js" %}"></script> <!-- JavaScript -->
     </head>
 
     <body>
-        <h1>About Page</h1>
-	<p><b>{{boldmessage}}</b></p>
-	<a href="/rango/">Home</a> <br><br>
-        <img src="{% static "images/dimi.jpg" %}" alt="Picture of Dimitrios Kolovopoulos" /> <!-- Images -->
+        <h1>About us</h1>
+        Hello, World! <strong>{{ boldmessage }}</strong> <br>
+        <a href="/rango/">Home</a> <br>
+        <img src="{% static "images/iguana.jpg" %}" alt="Picture of Iguana" /> <!-- Images -->
     </body>
 
 </html>
