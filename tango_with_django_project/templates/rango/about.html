@@ -1,20 +1,14 @@
-<!DOCTYPE html>
 
-{% load static %}
+{% extends 'rango/base.html' %}
 
-<html>
+{% load staticfiles %}
 
-<head>
-    <title>Rango | About</title>
-    <link rel="stylesheet" href="{% static "css/base.css" %}" /> <!-- CSS -->
-    <script src="{% static "js/jquery.js" %}"></script> <!-- JavaScript -->
-    </head>
+{% block title %}{{ category_name }}{% endblock %}
 
-    <body>
-        <h1>About me</h1>
-        This tutorial has been put together by <b>{{student_name}}, {{student_number}}</b> <br>
-        <a href="/rango/">Home</a> <br>
-        <img src="{% static "images/george.jpg" %}" alt="Picture of George" /> <!-- Images -->
-    </body>
+{% block body_block %}
 
-</html>
+<h1>About me</h1>
+This tutorial has been put together by <b>{{student_name}}, {{student_number}}</b> <br>
+<img src="{% static "images/george.jpg" %}" alt="Picture of George" /> <!-- Images -->
+
+{% endblock %}

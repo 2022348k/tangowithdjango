@@ -1,18 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Rango</title>
-</head>
 
-<body>
-<h1>Register with Rango</h1>
+{% extends 'rango/base.html' %}
 
-{% if registered %}
-Rango says: <strong>thank you for registering!</strong>
-<a href="/rango/">Return to the homepage.</a><br />
-{% else %}
-Rango says: <strong>register here!</strong><br />
+{% load staticfiles %}
 
+{% block title %}{{ category_name }}{% endblock %}
+
+{% block body_block %}
+<h1>Register</h1>
 <form id="user_form" method="post" action="/rango/register/"
       enctype="multipart/form-data">
 
@@ -27,6 +21,4 @@ Rango says: <strong>register here!</strong><br />
     <!-- Provide a button to click to submit the form. -->
     <input type="submit" name="submit" value="Register" />
 </form>
-{% endif %}
-</body>
-</html>
+{% endblock %}
