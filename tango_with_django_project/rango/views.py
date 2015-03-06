@@ -9,9 +9,9 @@ from rango.forms import UserForm, UserProfileForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from datetime import datetime
+from django.contrib.auth.models import User
 
 def index(request):
-
     category_list = Category.objects.order_by('-likes')[:5]
     page_list = Page.objects.order_by('-views')[:5]
 
@@ -27,12 +27,9 @@ def index(request):
         last_visit_time = datetime.strptime(last_visit[:-7], "%Y-%m-%d %H:%M:%S")
 
         if (datetime.now() - last_visit_time).seconds > 0:
-            # ...reassign the value of the cookie to +1 of what it was before...
             visits = visits + 1
-            # ...and update the last visit cookie, too.
             reset_last_visit_time = True
     else:
-        # Cookie last_visit doesn't exist, so create it to the current date/time.
         reset_last_visit_time = True
 
     if reset_last_visit_time:
@@ -46,24 +43,36 @@ def index(request):
     return response
 
 def about(request):
-	if request.session.get('visits'):
-		count = request.session.get('visits')
-	else:
-		count = 0
-	context_dict = {'student_name': "Dimitrios Kolovopoulos", 'student_number': "2022348K", 'visits': count}
-	return render(request, 'rango/about.html', context_dict)
+    if request.session.get('visits'):
+        count = request.session.get('visits')
+    else:
+        count = 0
+    context_dict = {'student_name': "Georgios Kampanos", 'student_number': "2021259K", 'visits': count}
+    return render(request, 'rango/about.html', context_dict)
 
 def category(request, category_name_slug):
     context_dict = {'cat_slug': category_name_slug}
 
+    #result_list = []
+
+    if request.method == 'POST':
+        query = request.POST['query'].strip()
+        if query:
+            # Run our Bing function to get the results list!
+            context_dict = {'search_results': run_query(query)}
+
     try:
         category = Category.objects.get(slug=category_name_slug)
         context_dict['category_name'] = category.name
-
         pages = Page.objects.filter(category=category)
 
         context_dict['pages'] = pages
         context_dict['category'] = category
+
+        #update views
+        category.views += 1
+        category.save()
+
     except Category.DoesNotExist:
         pass
 
@@ -114,10 +123,6 @@ def add_page(request, category_name_slug):
 
 
 def register(request):
-    if request.session.test_cookie_worked():
-        print ">>>> TEST COOKIE WORKED!"
-    request.session.delete_test_cookie()
-    
 
     registered = False
     if request.method == 'POST':
@@ -147,6 +152,47 @@ def register(request):
     return render(request,
                   'rango/register.html',
                   {'user_form': user_form, 'profile_form': profile_form, 'registered': registered} )
+
+@login_required
+def register_profile(request):
+     
+    if request.method == 'POST':
+        profile_form = UserProfileForm(data=request.POST)
+ 
+        if profile_form.is_valid():
+            profile = profile_form.save(commit=False)
+            profile.user = request.user
+ 
+            if 'picture' in request.FILES:
+                profile.picture = request.FILES['picture']
+            profile.save()
+        else:
+            print profile_form.errors
+    else:
+        profile_form = UserProfileForm()
+        
+    return render(request,"registration/profile_registration.html",{'profile_form': profile_form})
+
+#@login_required
+#def register_profile_2(request):
+#     if request.method == 'POST':
+#         profile_form = UserProfileForm(data=request.POST, instance = request.user.profile)
+# 
+#         if profile_form.is_valid():
+#             profile_form.save()
+# #             if 'picture' in request.FILES:
+# #                 profile.picture = request.FILES['picture']
+#             return HttpResponseRedirect('/rango/')
+#         else:
+#             user = request.user
+#             profile = user.profile
+#             form = UserProfileForm(instance = profile)
+#         
+#     args = {}
+#     args.update(csrf(request))
+#     args['form'] = form
+    
+  #  return render(request, 'registration/profile_registration.html', args)
 
 def user_login(request):
     if request.method == 'POST':
@@ -179,3 +225,35 @@ def user_logout(request):
 
     # Take the user back to the homepage.
     return HttpResponseRedirect('/rango/')
+
+def search(request):
+
+    result_list = []
+
+    if request.method == 'POST':
+        query = request.POST['query'].strip()
+
+        if query:
+            # Run our Bing function to get the results list!
+            result_list = run_query(query)
+
+    return render(request, 'rango/search.html', {'result_list': result_list})
+
+
+def track_url(request):
+    if request.method == 'GET':
+        if 'page_id' in request.GET:
+            pages = Page.objects.all().filter(id = request.GET['page_id'])
+            if len(pages) == 0:
+                return HttpResponseRedirect('/rango/404/')
+
+            #get the page, update the views and update on server
+            page = pages[0]
+            page.views += 1
+            page.save()
+
+    return HttpResponseRedirect(page.url)
+
+
+def error_page(request):
+    return render(request, 'rango/404.html')
