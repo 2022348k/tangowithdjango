@@ -5,12 +5,14 @@ from rango.models import Category
 from rango.models import Page
 from rango.forms import CategoryForm
 from rango.forms import PageForm
-from rango.forms import UserForm, UserProfileForm
+from rango.forms import UserForm, UserProfileForm, ImageUploadForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from datetime import datetime
-from django.contrib.auth.models import User
 from rango.bing_search import run_query
+from django.contrib.auth.models import User
+from rango.models import UserProfile
+from django.core.urlresolvers import reverse
 
 def index(request):
     category_list = Category.objects.order_by('-likes')[:5]
@@ -154,46 +156,64 @@ def register(request):
                   'rango/register.html',
                   {'user_form': user_form, 'profile_form': profile_form, 'registered': registered} )
 
+
+
+
 @login_required
 def register_profile(request):
-     
+    
     if request.method == 'POST':
-        profile_form = UserProfileForm(data=request.POST)
- 
+        profile_form = UserProfileForm(request.POST, request.FILES) #get the data and the files from the form
+        
         if profile_form.is_valid():
             profile = profile_form.save(commit=False)
-            profile.user = request.user
- 
-            if 'picture' in request.FILES:
-                profile.picture = request.FILES['picture']
-            profile.save()
+            profile.user = request.user     #get the user we want to update the profile
+            profile.save()  #save the profile
+            return HttpResponseRedirect('/rango/')  #redirect to the homepage
         else:
-            print profile_form.errors
+            print profile_form.errors   
     else:
         profile_form = UserProfileForm()
-        
-    return render(request,"registration/profile_registration.html",{'profile_form': profile_form})
+    return render(request,"profiles/profile_registration.html", {'profile_form': profile_form})
 
-#@login_required
-#def register_profile_2(request):
-#     if request.method == 'POST':
-#         profile_form = UserProfileForm(data=request.POST, instance = request.user.profile)
-# 
-#         if profile_form.is_valid():
-#             profile_form.save()
-# #             if 'picture' in request.FILES:
-# #                 profile.picture = request.FILES['picture']
-#             return HttpResponseRedirect('/rango/')
-#         else:
-#             user = request.user
-#             profile = user.profile
-#             form = UserProfileForm(instance = profile)
-#         
-#     args = {}
-#     args.update(csrf(request))
-#     args['form'] = form
+@login_required
+def profile(request, username):
+    try:
+        user = User.objects.get(username = username)
+        profile = UserProfile.objects.get(user_id = user.id)
+        dict = {'user_image':profile.picture, 'user_name': user, 'user_email': user.email, 'user_website': profile.website}
+        return render(request,"profiles/profile.html", dict)
+    except User.DoesNotExist:
+        return HttpResponseRedirect('/rango/404/')  #if user doesn't exist
+    except:
+        return HttpResponseRedirect('/rango/404/')  #catch all the exceptions
+
+@login_required
+def profile_update(request):
+    if request.method == 'POST':
+        profile_form = UserProfileForm(request.POST, request.FILES)
+        if profile_form.is_valid():
+            profile = UserProfile.objects.get(user_id = request.user.id)
+            profile_form_data = profile_form.cleaned_data
+            profile_new_website = profile_form_data['website']
+            profile_new_avatar = profile_form_data['picture']
+            print profile_new_avatar
+            if len(profile_new_website) > 0: profile.website = profile_new_website
+            if profile_new_avatar is not None: profile.picture = profile_new_avatar
+            profile.save()
+            url = '/rango/profile/'+str(request.user)
+            return HttpResponseRedirect(url)  #redirect to the profile
+#             
+    else:
+        profile_form = UserProfileForm()
     
-  #  return render(request, 'registration/profile_registration.html', args)
+    return render(request,"profiles/profile_update.html", {'profile_form': profile_form, 'user_name': request.user})
+
+@login_required
+def profile_all(request):
+    #merge the user and user_profile dictionaries and return them
+    return render(request,"profiles/profile_all.html", {'users':zip(User.objects.all(), UserProfile.objects.all())})
+
 
 def user_login(request):
     if request.method == 'POST':

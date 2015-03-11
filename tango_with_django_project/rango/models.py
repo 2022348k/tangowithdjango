@@ -32,6 +32,9 @@ class UserProfile(models.Model):
     # The additional attributes we wish to include.
     website = models.URLField(blank=True)
     picture = models.ImageField(upload_to='profile_images', blank=True)
+    
+    def save(self, *args, **kwargs):
+       super(UserProfile, self).save(*args, **kwargs)
 
     # Override the __unicode__() method to return out something meaningful!
     def __unicode__(self):

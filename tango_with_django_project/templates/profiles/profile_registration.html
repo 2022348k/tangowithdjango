@@ -1,0 +1,63 @@
+{% extends 'rango/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}Add profile{% endblock %}
+
+{% block body_block %}
+
+<div class="page-header">
+    <h1>Add Profile</h1>
+</div>
+<div>
+    <form action="." method="post" enctype="multipart/form-data" class="form-horizontal">
+        
+        {% csrf_token %}
+        <div>
+            {% if profile_form.errors %}
+                <div class="alert alert-warning" role="alert">
+                    {% if profile_form.errors.items|length == 1 %}
+                        Please correct the error below.
+                    {% else %}
+                        Please correct the errors below.
+                    {% endif %}
+                </div>
+            {% endif %}
+
+
+            <div class="alert alert-info" role="alert">Please update your profile.</div>
+
+            <fieldset>
+
+                <div class="form-group">
+                    {% if profile_form.website.errors %}<div class="alert alert-danger" role="alert">{{ profile_form.website.errors }}</div>{% endif %}
+                    <label for="website" class="col-sm-2 control-label required">Your Website:</label>
+                    <div class="col-sm-10">
+                        {{ profile_form.website }}
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    {% if profile_form.picture.errors %}<div class="alert alert-danger" role="alert">{{ profile_form.picture.errors }}</div>{% endif %}
+                    <label for="website" class="col-sm-2 control-label required">Your Avatar:</label>
+                    <div class="col-sm-10">
+                        {{ profile_form.picture }}
+                    </div>
+                </div>
+
+            </fieldset>
+
+            <div class="form-group">
+                <input type="submit" value="Update my profile" class="btn btn-success" />
+            </div>
+            
+        </div>
+        
+    </form>
+
+</div>
+
+
+
+</div>
+{% endblock %}

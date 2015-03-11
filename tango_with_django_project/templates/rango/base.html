@@ -43,17 +43,17 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="{% url 'index' %}">Home</a></li>
+                <li><a href="{% url 'about' %}">About</a></li>
                 {% if user.is_authenticated %}
                 <li><a href="{% url 'restricted' %}">Restricted Page</a></li>
+                <li><a href="{% url 'add_category' %}">Add Category</a></li>
+                <li><a href="{% url 'profile_all' %}">View All Users</a></li>
+                <li><a href="/rango/profile/{{user.get_username}}">Profile</a></li>
                 <li><a href="{% url 'auth_logout' %}?next=/rango/">Logout</a></li>
-                <li><a href="{% url 'add_category' %}">Add a New Category</a></li>
                 {% else %}
                 <li><a href="{% url 'registration_register' %}">Register Here</a></li>
                 <li><a href="{% url 'auth_login' %}">Login</a></li>
                 {% endif %}
-                <li><a href="{% url 'about' %}">About</a></li>
-                <li><a href="{% url 'search' %}"><img width="20" height="20" src="/static/images/search.png"></a></li>
-
             </ul>
         </div>
     </div>

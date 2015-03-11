@@ -1,0 +1,33 @@
+{% extends 'rango/base.html' %}
+
+{% load staticfiles %}
+
+{% block title %}Profile{% endblock %}
+
+{% block body_block %}
+    <div class="page-header">
+        <h1>Profile <small>{{user_name}}</small></h1>
+    </div>
+
+    <div class="row profile-body">
+        <div class="col-md-3">
+            <img src="/media/{{user_image}}" class="img-responsive">
+        </div>
+        <div class="col-md-9">
+            <b>Email</b>: {{user_email}} <br>
+            <b>Website</b>: {{user_website}} <br>
+            
+                <div class="btn-group" role="group" style="margin-top: 40px;">
+                    <a href="{{user_website}}" class="btn btn-primary" target="_blank"><span class="glyphicon glyphicon-globe"></span>&nbsp;&nbsp;Visit on the Web</a>
+                    <a href="mailto:{{user_email}}" class="btn btn-success"><span class="glyphicon glyphicon-envelope"></span>&nbsp;&nbsp;Email User</a>
+                    {% if user == user_name %}  <!--make sure it's 'our' profile that we see those btns-->
+                    <a href="/rango/profile_update/" class="btn btn-info"><span class="glyphicon glyphicon-pencil"></span>&nbsp;&nbsp;Update your Profile</a>
+                    <a href="/rango/accounts/password_change/" class="btn btn-warning"><span class="glyphicon glyphicon-asterisk"></span>&nbsp;&nbsp;Change your Password</a>
+                    {% endif %}
+                </div>
+        </div>
+        
+    </div>
+
+
+{% endblock %}

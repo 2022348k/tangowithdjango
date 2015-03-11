@@ -44,8 +44,10 @@ class UserForm(forms.ModelForm):
         model = User
         fields = ('username', 'email', 'password')
 
-
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ('website', 'picture')
+        
+class ImageUploadForm(forms.Form):
+    file = forms.FileField()
