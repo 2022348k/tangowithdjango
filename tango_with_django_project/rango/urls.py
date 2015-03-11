@@ -17,4 +17,5 @@ urlpatterns = patterns('',
                        url(r'^add_profile/$', views.register_profile, name='add_profile'),
                        url(r'^accounts/password_change/$', 'django.contrib.auth.views.password_change', {'post_change_redirect' : '/rango/accounts/password_change/done/'},  name="password_change"), 
                        url(r'^accounts/password_change/done/$', 'django.contrib.auth.views.password_change_done'),
+					   url(r'^search/$', views.search, name='search'),
                     )

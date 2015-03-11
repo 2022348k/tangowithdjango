@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from datetime import datetime
 from django.contrib.auth.models import User
+from rango.bing_search import run_query
 
 def index(request):
     category_list = Category.objects.order_by('-likes')[:5]
@@ -47,7 +48,7 @@ def about(request):
         count = request.session.get('visits')
     else:
         count = 0
-    context_dict = {'student_name': "Georgios Kampanos", 'student_number': "2021259K", 'visits': count}
+    context_dict = {'student_name': "Dimitrios Kolovopoulos", 'student_number': "2022348K", 'visits': count}
     return render(request, 'rango/about.html', context_dict)
 
 def category(request, category_name_slug):
